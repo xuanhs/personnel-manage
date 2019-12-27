@@ -1,12 +1,16 @@
 spring:
   application:
     name: personnel-manage
+  datasource:
+    url: jdbc:mysql://47.107.111.6:3306/experiment_platform
+    username: root
+    password: mysqlmima
 
 eureka:
   client:
     enabled: true
     serviceUrl:
-      defaultZone: http://47.107.111.6/eureka
+      defaultZone: http://47.107.111.6:8761/eureka
 
 
 server:
