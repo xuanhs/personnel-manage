@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserInfoApi {
 
     @PostMapping(value = "/user/register")
-    ResResult<String> register(@RequestParam("User") UserDTO userDTO);
+    ResResult<String> register(UserDTO userDTO);
 
     @PostMapping(value = "/user/login")
-    ResResult<String> login(@RequestParam("User") UserDTO userDTO);
+    ResResult<String> login(UserDTO userDTO);
 }

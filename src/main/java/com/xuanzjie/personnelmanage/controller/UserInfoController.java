@@ -7,7 +7,11 @@ import com.xuanzjie.personnelmanage.service.UserInfoService;
 import com.xuanzjie.personnelmanage.utils.ResResult;
 import com.xuanzjie.personnelmanage.utils.ResUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class UserInfoController implements UserInfoApi {
     @Autowired
     UserInfoService userInfoService;
@@ -22,7 +26,7 @@ public class UserInfoController implements UserInfoApi {
     }
 
     @Override
-    public ResResult<String> login(UserDTO userDTO) {
+    public ResResult<String> login(@RequestBody @Validated UserDTO userDTO) {
         if (userDTO == null) {
             return ResUtils.data(ResultCode.INPUT_EXCEPTION.getCode(), ResultCode.INPUT_EXCEPTION.getMessage());
         }
