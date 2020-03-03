@@ -7,16 +7,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * 实验/课时表
- */
 @Data
-@Table(name = "experiment")
-public class Experiment {
+@Table(name = "course_user")
+public class CourseUser {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "JDBC")
     private Integer id;
+
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "course_id")
     private Integer courseId;
@@ -24,16 +25,12 @@ public class Experiment {
     @Column(name = "class_id")
     private Integer classId;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "is_create")
+    private Integer isCreate;
 
     @Column(name = "create_time")
     private Integer createTime;
 
-    /**
-     * 到期时间
-     */
-    @Column(name = "deadline")
-    private Integer deadline;
-
+    @Column(name = "update_time")
+    private Integer updateTime;
 }

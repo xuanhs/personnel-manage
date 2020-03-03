@@ -4,6 +4,7 @@ import com.xuanzjie.personnelmanage.comman.ResultCode;
 import com.xuanzjie.personnelmanage.mapper.UserMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.UserDTO;
 import com.xuanzjie.personnelmanage.pojo.po.User;
+import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
 import com.xuanzjie.personnelmanage.service.UserInfoService;
 import com.xuanzjie.personnelmanage.utils.DozerUtils;
 import com.xuanzjie.personnelmanage.utils.Search;
@@ -21,21 +22,21 @@ public class UserInfoServiceImpl implements UserInfoService {
     UserMapper userMapper;
 
     @Override
-    public ResultCode register(UserDTO userDTO) {
+    public EntitySaveVO register(UserDTO userDTO) {
         if (!checkUserName(userDTO)) {
-            return ResultCode.NAME_REPEAT;
+            return new EntitySaveVO(ResultCode.NAME_REPEAT);
         }
         saveUser(userDTO);
-        return ResultCode.SUCCESS;
+        return new EntitySaveVO(ResultCode.SUCCESS);
     }
 
 
     @Override
-    public ResultCode login(UserDTO userDTO) {
+    public EntitySaveVO login(UserDTO userDTO) {
         if (!checkUserPassword(userDTO)) {
-            return ResultCode.PASSWORD_FAIL;
+            return new EntitySaveVO(ResultCode.PASSWORD_FAIL);
         }
-        return ResultCode.SUCCESS;
+        return new EntitySaveVO(ResultCode.SUCCESS);
     }
 
 

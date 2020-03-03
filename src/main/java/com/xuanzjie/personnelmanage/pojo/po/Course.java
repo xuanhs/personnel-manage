@@ -29,4 +29,16 @@ public class Course {
 
     @Column(name = "create_time")
     private Integer createTime;
+
+    /**
+     * 说明
+     */
+    @Column(name = "explanation")
+    private Integer explanation;
+
+    /**
+     * 封面路径
+     */
+    @Column(name = "cover")
+    private String cover;
 }
