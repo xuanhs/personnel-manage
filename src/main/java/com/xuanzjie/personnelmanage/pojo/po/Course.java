@@ -34,7 +34,7 @@ public class Course {
      * 说明
      */
     @Column(name = "explanation")
-    private Integer explanation;
+    private String explanation;
 
     /**
      * 封面路径

@@ -16,7 +16,7 @@ public class CourseInfoVO {
     /**
      * 说明
      */
-    private Integer explanation;
+    private String explanation;
 
     /**
      * 封面路径
