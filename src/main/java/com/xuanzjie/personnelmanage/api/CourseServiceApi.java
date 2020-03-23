@@ -2,16 +2,17 @@ package com.xuanzjie.personnelmanage.api;
 
 
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseInfoVO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseListVO;
-import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.utils.ResResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
 @FeignClient(value = "personnel-manage")
+@Api(tags = "课程模块")
 public interface CourseServiceApi {
 
     /**
@@ -19,7 +20,8 @@ public interface CourseServiceApi {
      * @param getCourseListDTO
      * @return CourseListVO
      */
-    @PostMapping("/getCourseList")
+    @ApiOperation(value = "课程列表", response = CourseListVO.class)
+    @PostMapping("/course/getCourseList")
     ResResult<List<CourseListVO>> getCreateCourse(CourseDTO.GetCourseListDTO getCourseListDTO);
 
     /**
@@ -27,7 +29,7 @@ public interface CourseServiceApi {
      * @param updateCourseDTO
      * @return
      */
-    @PostMapping("/updateCourse")
+    @PostMapping("/course/updateCourse")
     ResResult<EntitySaveVO> updateCourse(CourseDTO.UpdateCourseDTO updateCourseDTO);
 
     /**
@@ -35,6 +37,8 @@ public interface CourseServiceApi {
      * @param getCourseDetailDTO
      * @return
      */
-    @PostMapping("/getCourseDetail")
+    @PostMapping("/course/getCourseDetail")
     ResResult<CourseInfoVO> getCourseDetail(CourseDTO.GetCourseDetailDTO getCourseDetailDTO);
+
+
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CourseInfoVO {
+public class CourseManageVO {
 
     private Integer id;
 
@@ -15,9 +15,10 @@ public class CourseInfoVO {
     private String teacherName;
 
     /**
-     * 课程名称
+     * 名称
      */
     private String name;
+
     /**
      * 说明
      */
@@ -28,9 +29,9 @@ public class CourseInfoVO {
      */
     private String cover;
 
-    /**
-     * 班级、学生
-     */
-    private List<ClassManageVO> classManageVOList;
 
+    /**
+     *班级列表
+     */
+    private List<ClassManageVO> classVOList;
 }

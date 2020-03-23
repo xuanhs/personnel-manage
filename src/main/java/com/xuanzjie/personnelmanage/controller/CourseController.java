@@ -2,6 +2,7 @@ package com.xuanzjie.personnelmanage.controller;
 
 import com.xuanzjie.personnelmanage.api.CourseServiceApi;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
+import com.xuanzjie.personnelmanage.pojo.vo.ClassManageVO;
 import com.xuanzjie.personnelmanage.pojo.vo.CourseInfoVO;
 import com.xuanzjie.personnelmanage.pojo.vo.CourseListVO;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;

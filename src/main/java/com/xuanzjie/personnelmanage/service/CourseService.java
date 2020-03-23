@@ -3,6 +3,7 @@ package com.xuanzjie.personnelmanage.service;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
 import com.xuanzjie.personnelmanage.pojo.vo.CourseInfoVO;
 import com.xuanzjie.personnelmanage.pojo.vo.CourseListVO;
+import com.xuanzjie.personnelmanage.pojo.vo.CourseManageVO;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
 
 import java.util.List;

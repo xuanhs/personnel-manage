@@ -5,13 +5,15 @@ import com.xuanzjie.personnelmanage.mapper.UserMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.UserDTO;
 import com.xuanzjie.personnelmanage.pojo.po.User;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.search.ExampleBuilder;
+import com.xuanzjie.personnelmanage.search.Search;
 import com.xuanzjie.personnelmanage.service.UserInfoService;
 import com.xuanzjie.personnelmanage.utils.DozerUtils;
-import com.xuanzjie.personnelmanage.utils.Search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -39,11 +41,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         return new EntitySaveVO(ResultCode.SUCCESS);
     }
 
+    @Override
+    public List<User> searchUserList(List<Integer> idList) {
+        Search search = new Search();
+        search.put("id_in",idList);
+        Example example = new ExampleBuilder(User.class).search(search).build();
+        return userMapper.selectByExample(example);
+    }
+
 
     //昵称查重
     private boolean checkUserName(UserDTO userDTO) {
-        Search search = new Search();
-        search.put("name", userDTO.getName());
         User user = new User();
         user.setName(userDTO.getName());
         List<User> userList = userMapper.select(user);
