@@ -37,8 +37,28 @@ public interface CourseServiceApi {
      * @param getCourseDetailDTO
      * @return
      */
+    @ApiOperation(value = "获取课程详情")
     @PostMapping("/course/getCourseDetail")
     ResResult<CourseInfoVO> getCourseDetail(CourseDTO.GetCourseDetailDTO getCourseDetailDTO);
 
+    /**
+     * 创建、更新班级
+     *
+     * @param updateClassDTO
+     * @return
+     */
+    @ApiOperation(value = "创建、更新班级")
+    @PostMapping("/course/updateClass")
+    ResResult<EntitySaveVO> updateClass(CourseDTO.UpdateClassDTO updateClassDTO);
+
+    /**
+     * 创建、更新学生
+     *
+     * @param updateStudentDTO
+     * @return
+     */
+    @ApiOperation(value = "创建、更新学生")
+    @PostMapping("/course/updateStudent")
+    ResResult<EntitySaveVO> updateStudent(CourseDTO.UpdateStudentDTO updateStudentDTO);
 
 }

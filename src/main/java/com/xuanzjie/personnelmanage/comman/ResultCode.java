@@ -6,7 +6,8 @@ public enum ResultCode {
 
     NAME_REPEAT(1001, "用户名已存在"),
     INPUT_EXCEPTION(1002,"参数异常"),
-    SUCCESS(1200,"成功"),
+    SUCCESS(0,"成功"),
+    FAIL(1,"发生错误"),
     PASSWORD_FAIL(1003,"密码错误");
     @Getter
     private Integer code;

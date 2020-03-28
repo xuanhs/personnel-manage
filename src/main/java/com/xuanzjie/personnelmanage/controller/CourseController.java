@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class CourseController implements CourseServiceApi {
+public class  CourseController implements CourseServiceApi {
 
     @Autowired
     CourseService courseService;
@@ -35,5 +35,15 @@ public class CourseController implements CourseServiceApi {
     @Override
     public ResResult<CourseInfoVO> getCourseDetail(@RequestBody @Validated CourseDTO.GetCourseDetailDTO getCourseDetailDTO) {
         return ResUtils.data(courseService.getCourseDetail(getCourseDetailDTO.getId()));
+    }
+
+    @Override
+    public ResResult<EntitySaveVO> updateClass(@RequestBody @Validated CourseDTO.UpdateClassDTO updateClassDTO) {
+        return ResUtils.data(courseService.updateClass(updateClassDTO));
+    }
+
+    @Override
+    public ResResult<EntitySaveVO> updateStudent(@RequestBody @Validated CourseDTO.UpdateStudentDTO updateStudentDTO) {
+        return ResUtils.data(courseService.updateStudent(updateStudentDTO));
     }
 }

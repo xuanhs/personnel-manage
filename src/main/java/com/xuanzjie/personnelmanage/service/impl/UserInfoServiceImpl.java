@@ -5,6 +5,8 @@ import com.xuanzjie.personnelmanage.mapper.UserMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.UserDTO;
 import com.xuanzjie.personnelmanage.pojo.po.User;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.vo.UserListVO;
+import com.xuanzjie.personnelmanage.pojo.vo.UserVO;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
 import com.xuanzjie.personnelmanage.service.UserInfoService;
@@ -15,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -47,6 +50,19 @@ public class UserInfoServiceImpl implements UserInfoService {
         search.put("id_in",idList);
         Example example = new ExampleBuilder(User.class).search(search).build();
         return userMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<UserVO> searchUserByName(String name) {
+        Search search = new Search();
+        search.put("identity_eq",1);
+        search.put("name_like",name);
+        Example example = new ExampleBuilder(User.class).search(search).build();
+        List<User> userList  = userMapper.selectByExample(example);
+        if(CollectionUtils.isEmpty(userList)){
+            return new ArrayList<>(0);
+        }
+        return DozerUtils.mapList(userList,UserVO.class);
     }
 
 

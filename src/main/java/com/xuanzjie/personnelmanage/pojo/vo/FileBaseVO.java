@@ -1,23 +1,11 @@
 package com.xuanzjie.personnelmanage.pojo.vo;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.Data;
 
+@Data
 public class FileBaseVO {
 
     private Integer id;
-
-    /**
-     * 文件类似 0学生，1教师
-     */
-    private Integer type;
-
-    private Integer courseId;
-
-    private Integer classId;
-
-    private Integer experimentId;
 
     /**
      * 原文件名
@@ -36,6 +24,5 @@ public class FileBaseVO {
 
     private Integer createTime;
 
-    @Column(name = "update_time")
     private Integer updateTime;
 }

@@ -13,25 +13,11 @@ import javax.persistence.Table;
 @Data
 @Table(name = "file")
 public class FileBase {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(generator = "JDBC")
     private Integer id;
-
-    /**
-     * 文件类似 0学生，1教师
-     */
-    @Column(name = "type")
-    private Integer type;
-
-    @Column(name = "course_id")
-    private Integer courseId;
-
-    @Column(name = "class_id")
-    private Integer classId;
-
-    @Column(name = "experiment_id")
-    private Integer experimentId;
 
     /**
      * 原文件名

@@ -20,4 +20,14 @@ public class EntitySaveVO {
         this.code = code.getCode();
         this.message = code.getMessage();
     }
+
+    public void setResult(ResultCode code){
+        this.code = code.getCode();
+        this.message = code.getMessage();
+    }
+
+    public void setResult(Integer code,String message){
+        this.code = code;
+        this.message = message;
+    }
 }

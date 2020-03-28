@@ -16,6 +16,11 @@ public class ExperimentDTO {
         /**
          * 课程id
          */
-       private Integer id;
+       private Integer courseId;
+
+        /**
+         * 班级id
+         */
+        private Integer classId;
     }
 }
