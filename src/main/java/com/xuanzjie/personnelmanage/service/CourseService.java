@@ -57,8 +57,10 @@ public interface CourseService {
     /**
      * 学生申请加入课程
      */
+    EntitySaveVO applyCourse(CourseDTO.ApplyCourseDTO applyCourseDTO);
 
     /**
      * 教师同意驳回加入课程
      */
+    EntitySaveVO dealApply(CourseDTO.DealCourseDTO dealCourseDTO);
 }

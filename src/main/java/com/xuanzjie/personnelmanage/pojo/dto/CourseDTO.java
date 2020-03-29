@@ -159,4 +159,36 @@ public class CourseDTO {
         @ApiModelProperty(notes = "名称")
         private String name;
     }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ApiModel(value = "ApplyCourseDTO")
+    public static class ApplyCourseDTO{
+
+        @ApiModelProperty(notes = "课程id")
+        private Integer courseId;
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ApiModel(value = "DealCourseDTO")
+    public static class DealCourseDTO{
+
+
+        @ApiModelProperty(notes = "中间表主键id")
+        private Integer id;
+
+        @ApiModelProperty(notes = "课程id")
+        private Integer courseId;
+
+        @ApiModelProperty(notes = "用户id")
+        private Integer userId;
+
+        @ApiModelProperty(notes = "状态")
+        private Integer status;
+
+    }
 }

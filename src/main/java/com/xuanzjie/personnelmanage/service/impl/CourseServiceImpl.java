@@ -221,6 +221,50 @@ public class CourseServiceImpl implements CourseService {
         return searchCourseByTeacherName(searchCourseDTO.getName());
     }
 
+    @Override
+    public EntitySaveVO applyCourse(CourseDTO.ApplyCourseDTO applyCourseDTO) {
+        Integer userId = AuthorityUtils.getUserId();
+        EntitySaveVO entitySaveVO = new EntitySaveVO();
+        entitySaveVO.setResult(ResultCode.FAIL);
+        if(applyCourseDTO == null || applyCourseDTO.getCourseId() == null || userId == null || userId<=0){
+            log.info("申请加入课程参数不正确");
+            return entitySaveVO;
+        }
+        CourseUser courseUser = new CourseUser();
+        courseUser.setCourseId(applyCourseDTO.getCourseId());
+        courseUser.setUserId(userId);
+        courseUser.setStatus(0);
+        courseUser.setIsCreate(0);
+        int result = courseUserMapper.insertSelective(courseUser);
+        if(result <= 0){
+            return entitySaveVO;
+        }
+        log.info("{}申请加入课程成功，{}",userId,applyCourseDTO);
+        entitySaveVO.setResult(ResultCode.SUCCESS);
+        return entitySaveVO;
+    }
+
+    @Override
+    public EntitySaveVO dealApply(CourseDTO.DealCourseDTO dealCourseDTO) {
+        EntitySaveVO entitySaveVO = new EntitySaveVO();
+        entitySaveVO.setResult(ResultCode.FAIL);
+        if(dealCourseDTO == null || dealCourseDTO.getId() == null || dealCourseDTO.getStatus() == null){
+            log.info("处理课程参数不正确，{}",dealCourseDTO);
+            return entitySaveVO;
+        }
+        CourseUser courseUser = new CourseUser();
+        courseUser.setId(dealCourseDTO.getId());
+        courseUser.setStatus(dealCourseDTO.getStatus());
+        int result = courseUserMapper.updateByPrimaryKey(courseUser);
+        if(result<=0){
+            log.info("处理课程参数不正确");
+            return entitySaveVO;
+        }
+        log.info("处理课程成功，{}",dealCourseDTO);
+        entitySaveVO.setResult(ResultCode.SUCCESS);
+        return entitySaveVO;
+    }
+
     /**
      * 根据教师名称搜索课程
      * @param name
@@ -327,17 +371,30 @@ public class CourseServiceImpl implements CourseService {
             return new CourseInfoVO();
         }
         CourseInfoVO result = DozerUtils.map(course, CourseInfoVO.class);
-        //获取教师名称 todo
-
+        //获取教师名称
+        result.setTeacherName(getUserNameById(course.getTeacherId()));
         //班级信息 todo
         List<ClassManageVO> classManageVOList = searchClassAndStudent(id);
         result.setClassManageVOList(classManageVOList);
-        //实验信息 todo
+        //实验信息
         //动态 todo
         //统计信息 todo
         //
 
         return result;
+    }
+
+    /**
+     * 根据用户id获取名称
+     * @param teacherId
+     * @return
+     */
+    private String getUserNameById(Integer teacherId) {
+        UserVO userVO = userInfoService.searchUserNameById(teacherId);
+        if(userVO == null || StringUtils.isEmpty(userVO.getName())){
+            return "教师";
+        }
+        return userVO.getName();
     }
 
     /**

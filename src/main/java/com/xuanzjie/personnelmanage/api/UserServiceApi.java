@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Api(tags = "用户信息接口")
 public interface UserServiceApi {
 
-    @PostMapping(value = "/register")
+    @PostMapping(value = "/user/register")
     ResResult<EntitySaveVO> register(UserDTO userDTO);
 
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/user/login")
     ResResult<EntitySaveVO> login(UserDTO userDTO);
 
-    @GetMapping(value = "/test")
+    @GetMapping(value = "/user/test")
     ResResult<String> test();
 }

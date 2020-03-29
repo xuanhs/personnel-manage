@@ -20,4 +20,6 @@ public interface UserInfoService {
     List<User> searchUserList(List<Integer> idList);
 
     List<UserVO> searchUserByName(String name);
+
+    UserVO searchUserNameById(Integer id);
 }
