@@ -22,6 +22,9 @@ public class CourseDTO {
          */
         @ApiModelProperty(notes = "搜索类型")
         private Integer searchType;
+
+        @ApiModelProperty(notes = "课程名称")
+        private String name;
     }
 
     @Data
