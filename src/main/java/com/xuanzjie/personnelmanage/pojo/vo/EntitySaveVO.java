@@ -16,6 +16,8 @@ public class EntitySaveVO {
 
     private String message;
 
+    private Integer key;
+
     public EntitySaveVO(ResultCode code){
         this.code = code.getCode();
         this.message = code.getMessage();
@@ -29,5 +31,10 @@ public class EntitySaveVO {
     public void setResult(Integer code,String message){
         this.code = code;
         this.message = message;
+    }
+
+    public void setSucessKey(Integer key){
+        setResult(ResultCode.SUCCESS);
+        this.key = key;
     }
 }

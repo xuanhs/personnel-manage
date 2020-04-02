@@ -6,10 +6,8 @@ import com.xuanzjie.personnelmanage.mapper.ClassMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseUserMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
+import com.xuanzjie.personnelmanage.pojo.po.*;
 import com.xuanzjie.personnelmanage.pojo.po.Class;
-import com.xuanzjie.personnelmanage.pojo.po.Course;
-import com.xuanzjie.personnelmanage.pojo.po.CourseUser;
-import com.xuanzjie.personnelmanage.pojo.po.User;
 import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
@@ -47,7 +45,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseListVO> getCourseList(Integer searchType) {
         Integer uid = AuthorityUtils.getUserId();
-        log.info("查询课程：seatchType:{}", searchType);
+        log.info("查询课程：searchType:{}", searchType);
         if (searchType != null && searchType == 1) {
             return getCourse(1, uid);
         }
@@ -75,8 +73,23 @@ public class CourseServiceImpl implements CourseService {
 
         List<Course> courseList = selectCourseByIdList(courseIdList);
         List<CourseListVO> result = searchTeacherName(courseList);
+        searchFileBase(result);
         log.info("查询成功课程成功，isCreate:{},result:{}", isCreate, result);
         return result;
+    }
+
+    /**
+     * 根据文件id搜索文件
+     * @param result
+     */
+    private void searchFileBase(List<CourseListVO> result) {
+        Set<Integer> fileIdList = result.stream().map(CourseListVO::getFileId).collect(Collectors.toSet());
+        List<FileBase> fileBaseList = new ArrayList<>(fileIdList.size());
+        Map<Integer, FileBase> fileBaseMap = fileBaseList.stream().
+                collect(Collectors.toMap(FileBase::getId,fileBase -> fileBase,(newData,oldData)->newData));
+        for(CourseListVO courseListVO : result){
+            courseListVO.setFileBase(fileBaseMap.get(courseListVO.getFileId()));
+        }
     }
 
     /**

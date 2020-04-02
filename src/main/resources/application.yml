@@ -5,13 +5,16 @@ spring:
     url: jdbc:mysql://47.107.111.6:3306/experiment_platform
     username: root
     password: mysqlmima
-
+  main:
+    allow-bean-definition-overriding: true
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
 eureka:
   client:
     enabled: true
     serviceUrl:
       defaultZone: http://47.107.111.6:8761/eureka
-
 
 server:
   port: 8200

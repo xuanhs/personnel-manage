@@ -1,5 +1,6 @@
 package com.xuanzjie.personnelmanage.pojo.vo;
 
+import com.xuanzjie.personnelmanage.pojo.po.FileBase;
 import lombok.Data;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class CourseInfoVO {
     /**
      * 封面路径
      */
-    private String cover;
+    private FileBase fileBase;
 
     /**
      * 班级、学生

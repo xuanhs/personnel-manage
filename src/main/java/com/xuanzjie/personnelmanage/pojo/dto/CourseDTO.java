@@ -49,7 +49,7 @@ public class CourseDTO {
         /**
          * 封面路径
          */
-        private String cover;
+        private Integer fileId;
     }
 
 

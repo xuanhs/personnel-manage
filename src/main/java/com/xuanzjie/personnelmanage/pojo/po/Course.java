@@ -39,6 +39,6 @@ public class Course {
     /**
      * 封面路径
      */
-    @Column(name = "cover")
-    private String cover;
+    @Column(name = "file_id")
+    private Integer fileId;
 }

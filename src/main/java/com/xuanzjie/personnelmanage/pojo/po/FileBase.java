@@ -11,7 +11,7 @@ import javax.persistence.Table;
  * 文件表
  */
 @Data
-@Table(name = "file")
+@Table(name = "file_base")
 public class FileBase {
 
     @Id
