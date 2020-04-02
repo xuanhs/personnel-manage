@@ -105,7 +105,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     //用户登录认证
     private Boolean checkUserPassword(UserDTO userDTO) {
-        if(StringUtils.isEmpty(userDTO)){
+        if(userDTO == null || StringUtils.isEmpty(userDTO.getName()) || StringUtils.isEmpty(userDTO.getPassword())){
             return false;
         }
        Search search = new Search();

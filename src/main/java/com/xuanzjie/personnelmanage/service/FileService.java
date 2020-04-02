@@ -3,9 +3,11 @@ package com.xuanzjie.personnelmanage.service;
 import com.xuanzjie.personnelmanage.pojo.dto.FileBaseDTO;
 import com.xuanzjie.personnelmanage.pojo.po.FileBase;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.vo.FileBaseVO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface FileService {
 
@@ -14,7 +16,7 @@ public interface FileService {
      * @param ids
      * @return
      */
-    List<FileBase> searchFileListByIds(Collection<Integer> ids);
+    List<FileBaseVO> searchFileListByIds(List<Integer> ids);
 
     EntitySaveVO updateFileBase(FileBaseDTO.UpdateFileBaseDTO fileBaseDTO);
 }

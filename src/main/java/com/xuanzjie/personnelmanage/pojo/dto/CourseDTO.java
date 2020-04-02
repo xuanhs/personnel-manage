@@ -161,6 +161,9 @@ public class CourseDTO {
 
         @ApiModelProperty(notes = "名称")
         private String name;
+
+        @ApiModelProperty(notes = "是否创建者/课程内人员")
+        private Integer status;
     }
 
     @Data

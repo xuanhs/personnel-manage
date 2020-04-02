@@ -19,17 +19,12 @@ public class UserInfoController implements UserServiceApi {
 
     @Override
     public ResResult<EntitySaveVO> register(@RequestBody @Validated UserDTO userDTO) {
-        if (userDTO == null) {
-            return ResUtils.data(new EntitySaveVO(ResultCode.INPUT_EXCEPTION.getCode(), ResultCode.INPUT_EXCEPTION.getMessage()));
-        }
         return ResUtils.data(userInfoService.register(userDTO));
     }
 
     @Override
     public ResResult<EntitySaveVO> login(@RequestBody @Validated UserDTO userDTO) {
-        if (userDTO == null) {
-            return ResUtils.data(new EntitySaveVO(ResultCode.INPUT_EXCEPTION.getCode(), ResultCode.INPUT_EXCEPTION.getMessage()));
-        }
+
         return ResUtils.data(userInfoService.login(userDTO));
     }
 

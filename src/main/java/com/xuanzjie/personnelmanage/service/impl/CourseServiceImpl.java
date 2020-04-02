@@ -12,6 +12,7 @@ import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
 import com.xuanzjie.personnelmanage.service.CourseService;
+import com.xuanzjie.personnelmanage.service.FileService;
 import com.xuanzjie.personnelmanage.service.UserInfoService;
 import com.xuanzjie.personnelmanage.utils.AuthorityUtils;
 import com.xuanzjie.personnelmanage.utils.DateUtils;
@@ -41,6 +42,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     ClassMapper classMapper;
+
+    @Autowired
+    FileService fileService;
 
     @Override
     public List<CourseListVO> getCourseList(Integer searchType) {
@@ -83,10 +87,10 @@ public class CourseServiceImpl implements CourseService {
      * @param result
      */
     private void searchFileBase(List<CourseListVO> result) {
-        Set<Integer> fileIdList = result.stream().map(CourseListVO::getFileId).collect(Collectors.toSet());
-        List<FileBase> fileBaseList = new ArrayList<>(fileIdList.size());
-        Map<Integer, FileBase> fileBaseMap = fileBaseList.stream().
-                collect(Collectors.toMap(FileBase::getId,fileBase -> fileBase,(newData,oldData)->newData));
+        List<Integer> fileIdList = result.stream().map(CourseListVO::getFileId).collect(Collectors.toList());
+        List<FileBaseVO> fileBaseList = fileService.searchFileListByIds(fileIdList);
+        Map<Integer, FileBaseVO> fileBaseMap = fileBaseList.stream().
+                collect(Collectors.toMap(FileBaseVO::getId,fileBaseVO -> fileBaseVO,(newData,oldData)->newData));
         for(CourseListVO courseListVO : result){
             courseListVO.setFileBase(fileBaseMap.get(courseListVO.getFileId()));
         }

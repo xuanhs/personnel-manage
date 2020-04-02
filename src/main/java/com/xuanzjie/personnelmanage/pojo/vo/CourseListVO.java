@@ -30,6 +30,6 @@ public class CourseListVO {
     /**
      * 封面路径
      */
-    private FileBase fileBase;
+    private FileBaseVO fileBase;
 
 }

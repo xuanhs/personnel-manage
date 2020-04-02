@@ -5,6 +5,7 @@ import com.xuanzjie.personnelmanage.mapper.FileBaseMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.FileBaseDTO;
 import com.xuanzjie.personnelmanage.pojo.po.FileBase;
 import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.vo.FileBaseVO;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
 import com.xuanzjie.personnelmanage.service.FileService;
@@ -18,6 +19,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -27,7 +29,7 @@ public class FileServiceImpl implements FileService {
     FileBaseMapper fileBaseMapper;
 
     @Override
-    public List<FileBase> searchFileListByIds(Collection<Integer> ids) {
+    public List<FileBaseVO> searchFileListByIds(List<Integer> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             log.warn("根据id查询文件传参为空");
             return null;
@@ -35,7 +37,13 @@ public class FileServiceImpl implements FileService {
         Search search = new Search();
         search.put("id_in", ids);
         Example example = new ExampleBuilder(FileBase.class).search(search).build();
-        return fileBaseMapper.selectByExample(example);
+        List<FileBase> fileBaseList =  fileBaseMapper.selectByExample(example);
+        if(CollectionUtils.isEmpty(fileBaseList)){
+            log.warn("根据id查询文件结果为空，id{}",ids);
+            return null;
+        }
+        log.info("根据id查询文件成功，id:{}}",ids);
+        return DozerUtils.mapList(fileBaseList,FileBaseVO.class);
     }
 
     @Override
