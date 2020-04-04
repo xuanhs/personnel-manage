@@ -1,6 +1,5 @@
 package com.xuanzjie.personnelmanage.pojo.vo;
 
-import com.xuanzjie.personnelmanage.pojo.po.FileBase;
 import lombok.Data;
 
 @Data

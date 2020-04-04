@@ -51,6 +51,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public List<User> searchUserList(List<Integer> idList) {
+        if(CollectionUtils.isEmpty(idList)){
+            return new ArrayList<>(0);
+        }
         Search search = new Search();
         search.put("id_in",idList);
         Example example = new ExampleBuilder(User.class).search(search).build();

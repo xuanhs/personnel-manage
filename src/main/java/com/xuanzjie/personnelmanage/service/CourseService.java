@@ -1,9 +1,8 @@
 package com.xuanzjie.personnelmanage.service;
 
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseInfoVO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseListVO;
-import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.po.FileBase;
+import com.xuanzjie.personnelmanage.pojo.vo.*;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface CourseService {
      * @param searchType
      * @return
      */
-    List<CourseListVO> getCourseList(Integer searchType);
+    List<CourseListVO> getCourseList(Integer searchType,String name);
 
     /**
      * 创建、更新课程
@@ -32,6 +31,22 @@ public interface CourseService {
      * @return
      */
     CourseInfoVO getCourseDetail(Integer id);
+
+    /**
+     * 获取班级学生
+     * @param id
+     * @return
+     */
+    List<ClassManageVO> searchClassList(Integer id);
+
+    /**
+     *
+     * @param courseId
+     * @param classId
+     * @return
+     */
+    List<FileBaseVO> searchExperiment(Integer courseId,Integer classId);
+
 
     /**
      * 创建、更新班级

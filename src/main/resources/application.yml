@@ -8,8 +8,8 @@ spring:
   main:
     allow-bean-definition-overriding: true
 ribbon:
-  ConnectTimeout: 6000
-  ReadTimeout: 6000
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
 eureka:
   client:
     enabled: true

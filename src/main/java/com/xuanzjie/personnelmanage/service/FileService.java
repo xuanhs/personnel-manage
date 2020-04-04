@@ -18,5 +18,10 @@ public interface FileService {
      */
     List<FileBaseVO> searchFileListByIds(List<Integer> ids);
 
+    /**
+     * 更新文件
+     * @param fileBaseDTO
+     * @return
+     */
     EntitySaveVO updateFileBase(FileBaseDTO.UpdateFileBaseDTO fileBaseDTO);
 }

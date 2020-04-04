@@ -1,13 +1,14 @@
 package com.xuanzjie.personnelmanage.service.impl;
 
-import com.netflix.discovery.converters.Auto;
 import com.xuanzjie.personnelmanage.comman.ResultCode;
 import com.xuanzjie.personnelmanage.mapper.ClassMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseUserMapper;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
-import com.xuanzjie.personnelmanage.pojo.po.*;
 import com.xuanzjie.personnelmanage.pojo.po.Class;
+import com.xuanzjie.personnelmanage.pojo.po.Course;
+import com.xuanzjie.personnelmanage.pojo.po.CourseUser;
+import com.xuanzjie.personnelmanage.pojo.po.User;
 import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
@@ -47,13 +48,39 @@ public class CourseServiceImpl implements CourseService {
     FileService fileService;
 
     @Override
-    public List<CourseListVO> getCourseList(Integer searchType) {
+    public List<CourseListVO> getCourseList(Integer searchType, String name) {
         Integer uid = AuthorityUtils.getUserId();
         log.info("查询课程：searchType:{}", searchType);
-        if (searchType != null && searchType == 1) {
-            return getCourse(1, uid);
+        if(StringUtils.isEmpty(name)){
+            name = "";
         }
-        return getCourse(0, uid);
+        if (searchType != null && searchType == 1) {
+            return getCourse(1, uid, name);
+        }
+        if (searchType != null && searchType == 0) {
+            return getCourse(0, uid, name);
+        }
+        return getAllCourse(uid);
+    }
+
+    /**
+     * 获取所有的课程，不包括登录者创建的，以及已经加入的
+     *
+     * @param uid
+     * @return
+     */
+    private List<CourseListVO> getAllCourse(Integer uid) {
+        Search search = new Search();
+        search.put("teacherId_ne", uid);
+        Example example = new ExampleBuilder(Course.class).search(search).build();
+        List<Course> courseList = courseMapper.selectByExample(example);
+        log.info("查询更多课程成功，result:{}", courseList);
+        if (CollectionUtils.isEmpty(courseList)) {
+            return new ArrayList<>(0);
+        }
+        List<CourseListVO> result = searchTeacherName(courseList);
+        searchFileBase(result);
+        return result;
     }
 
 
@@ -64,10 +91,11 @@ public class CourseServiceImpl implements CourseService {
      * @param uid
      * @return
      */
-    private List<CourseListVO> getCourse(Integer isCreate, Integer uid) {
+    private List<CourseListVO> getCourse(Integer isCreate, Integer uid, String name) {
         Search search = new Search();
         search.put("isCreate_eq", isCreate);
         search.put("userId_eq", uid);
+        search.put("status_eq", 1);
         Example example = new ExampleBuilder(CourseUser.class).search(search).build();
         List<CourseUser> courseUserList = courseUserMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(courseUserList)) {
@@ -75,7 +103,7 @@ public class CourseServiceImpl implements CourseService {
         }
         List<Integer> courseIdList = courseUserList.stream().map(CourseUser::getCourseId).collect(Collectors.toList());
 
-        List<Course> courseList = selectCourseByIdList(courseIdList);
+        List<Course> courseList = selectCourseByIdList(courseIdList,name);
         List<CourseListVO> result = searchTeacherName(courseList);
         searchFileBase(result);
         log.info("查询成功课程成功，isCreate:{},result:{}", isCreate, result);
@@ -84,14 +112,15 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 根据文件id搜索文件
+     *
      * @param result
      */
     private void searchFileBase(List<CourseListVO> result) {
         List<Integer> fileIdList = result.stream().map(CourseListVO::getFileId).collect(Collectors.toList());
         List<FileBaseVO> fileBaseList = fileService.searchFileListByIds(fileIdList);
         Map<Integer, FileBaseVO> fileBaseMap = fileBaseList.stream().
-                collect(Collectors.toMap(FileBaseVO::getId,fileBaseVO -> fileBaseVO,(newData,oldData)->newData));
-        for(CourseListVO courseListVO : result){
+                collect(Collectors.toMap(FileBaseVO::getId, fileBaseVO -> fileBaseVO, (newData, oldData) -> newData));
+        for (CourseListVO courseListVO : result) {
             courseListVO.setFileBase(fileBaseMap.get(courseListVO.getFileId()));
         }
     }
@@ -124,9 +153,12 @@ public class CourseServiceImpl implements CourseService {
      * @param courseIdList
      * @return
      */
-    private List<Course> selectCourseByIdList(List<Integer> courseIdList) {
+    private List<Course> selectCourseByIdList(List<Integer> courseIdList,String name) {
         Search search = new Search();
         search.put("id_in", courseIdList);
+        if(!StringUtils.isEmpty(name)){
+            search.put("name_like",name);
+        }
         Example example = new ExampleBuilder(Course.class).search(search).build();
         List<Course> courseList = courseMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(courseIdList)) {
@@ -163,6 +195,19 @@ public class CourseServiceImpl implements CourseService {
             return new CourseInfoVO();
         }
         return searchCourseById(id);
+    }
+
+    @Override
+    public List<ClassManageVO> searchClassList(Integer id) {
+        if(id == null || id <= 0){
+            return new ArrayList<>(0);
+        }
+        return searchClassAndStudent(id);
+    }
+
+    @Override
+    public List<FileBaseVO> searchExperiment(Integer courseId, Integer classId) {
+        return null;
     }
 
     @Override
@@ -229,13 +274,20 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseListVO> searchCourse(CourseDTO.SearchCourseDTO searchCourseDTO) {
-        if(searchCourseDTO == null || StringUtils.isEmpty(searchCourseDTO.getName())){
-            return new ArrayList<>(1);
+        if (searchCourseDTO == null || StringUtils.isEmpty(searchCourseDTO.getName())) {
+            return getAllCourse(AuthorityUtils.getUserId());
         }
-        if(searchCourseDTO.getType() == null || searchCourseDTO.getType() == 0){
-            return searchCourseByCourseName(searchCourseDTO.getName());
-        }
-        return searchCourseByTeacherName(searchCourseDTO.getName());
+        List<CourseListVO> courseListVOList  = searchCourseByCourseName(searchCourseDTO.getName());
+
+        courseListVOList.addAll(searchCourseByTeacherName(searchCourseDTO.getName()));
+        log.info("根据名称搜索课程成功，result：{}",courseListVOList);
+        List<CourseListVO> result = courseListVOList.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(()->new TreeSet<>(Comparator.comparing(CourseListVO::getId))),
+                courseListVOs-> new ArrayList<>(courseListVOs)
+        ));
+        searchFileBase(result);
+        log.info("根据名称搜索课程成功,去重，返回搜索结果，result:{}",result);
+        return result;
     }
 
     @Override
@@ -243,7 +295,7 @@ public class CourseServiceImpl implements CourseService {
         Integer userId = AuthorityUtils.getUserId();
         EntitySaveVO entitySaveVO = new EntitySaveVO();
         entitySaveVO.setResult(ResultCode.FAIL);
-        if(applyCourseDTO == null || applyCourseDTO.getCourseId() == null || userId == null || userId<=0){
+        if (applyCourseDTO == null || applyCourseDTO.getCourseId() == null || userId == null || userId <= 0) {
             log.info("申请加入课程参数不正确");
             return entitySaveVO;
         }
@@ -253,10 +305,10 @@ public class CourseServiceImpl implements CourseService {
         courseUser.setStatus(0);
         courseUser.setIsCreate(0);
         int result = courseUserMapper.insertSelective(courseUser);
-        if(result <= 0){
+        if (result <= 0) {
             return entitySaveVO;
         }
-        log.info("{}申请加入课程成功，{}",userId,applyCourseDTO);
+        log.info("{}申请加入课程成功，{}", userId, applyCourseDTO);
         entitySaveVO.setResult(ResultCode.SUCCESS);
         return entitySaveVO;
     }
@@ -265,76 +317,80 @@ public class CourseServiceImpl implements CourseService {
     public EntitySaveVO dealApply(CourseDTO.DealCourseDTO dealCourseDTO) {
         EntitySaveVO entitySaveVO = new EntitySaveVO();
         entitySaveVO.setResult(ResultCode.FAIL);
-        if(dealCourseDTO == null || dealCourseDTO.getId() == null || dealCourseDTO.getStatus() == null){
-            log.info("处理课程参数不正确，{}",dealCourseDTO);
+        if (dealCourseDTO == null || dealCourseDTO.getId() == null || dealCourseDTO.getStatus() == null) {
+            log.info("处理课程参数不正确，{}", dealCourseDTO);
             return entitySaveVO;
         }
         CourseUser courseUser = new CourseUser();
         courseUser.setId(dealCourseDTO.getId());
         courseUser.setStatus(dealCourseDTO.getStatus());
         int result = courseUserMapper.updateByPrimaryKey(courseUser);
-        if(result<=0){
+        if (result <= 0) {
             log.info("处理课程参数不正确");
             return entitySaveVO;
         }
-        log.info("处理课程成功，{}",dealCourseDTO);
+        log.info("处理课程成功，{}", dealCourseDTO);
         entitySaveVO.setResult(ResultCode.SUCCESS);
         return entitySaveVO;
     }
 
     /**
      * 根据教师名称搜索课程
+     *
      * @param name
      * @return
      */
     private List<CourseListVO> searchCourseByTeacherName(String name) {
         List<UserVO> userVOList = userInfoService.searchUserByName(name);
-        if(CollectionUtils.isEmpty(userVOList)){
+        if (CollectionUtils.isEmpty(userVOList)) {
             return new ArrayList<>();
         }
         List<Integer> userIdList = userVOList.stream().map(UserVO::getId).collect(Collectors.toList());
         List<Course> courseList = getCourseByUserIdList(userIdList);
-        if(CollectionUtils.isEmpty(courseList)){
+        if (CollectionUtils.isEmpty(courseList)) {
             return new ArrayList<>();
         }
-        log.info("根据教师名称搜索课程成功，name:{}， result:{}",name,courseList);
+        log.info("根据教师名称搜索课程成功，name:{}， result:{}", name, courseList);
         return searchTeacherName(courseList);
     }
 
     /**
      * 根据教师id查询课程
+     *
      * @param userIdList
      * @return
      */
     private List<Course> getCourseByUserIdList(List<Integer> userIdList) {
         Search search = new Search();
-        search.put("teacherId_in",userIdList);
+        search.put("teacherId_in", userIdList);
         Example example = new ExampleBuilder(Course.class).search(search).build();
         return courseMapper.selectByExample(example);
     }
 
     /**
      * 根据课程名称搜索课程
+     *
      * @param name
      * @return
      */
     private List<CourseListVO> searchCourseByCourseName(String name) {
         List<Course> courseList = getCourseByName(name);
-        if(CollectionUtils.isEmpty(courseList)){
+        if (CollectionUtils.isEmpty(courseList)) {
             return new ArrayList<>();
         }
-        log.info("根据课程名称搜索课程成功，name:{}， result:{}",name,courseList);
+        log.info("根据课程名称搜索课程成功，name:{}， result:{}", name, courseList);
         return searchTeacherName(courseList);
     }
 
     /**
      * 根据名称查询课程
+     *
      * @param name
      * @return
      */
     private List<Course> getCourseByName(String name) {
         Search search = new Search();
-        search.put("name_like",name);
+        search.put("name_like", name);
         Example example = new ExampleBuilder(Course.class).search(search).build();
         return courseMapper.selectByExample(example);
     }
@@ -391,8 +447,6 @@ public class CourseServiceImpl implements CourseService {
         //获取教师名称
         result.setTeacherName(getUserNameById(course.getTeacherId()));
         //班级信息 todo
-        List<ClassManageVO> classManageVOList = searchClassAndStudent(id);
-        result.setClassManageVOList(classManageVOList);
         //实验信息
         //动态 todo
         //统计信息 todo
@@ -403,12 +457,13 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 根据用户id获取名称
+     *
      * @param teacherId
      * @return
      */
     private String getUserNameById(Integer teacherId) {
         UserVO userVO = userInfoService.searchUserNameById(teacherId);
-        if(userVO == null || StringUtils.isEmpty(userVO.getName())){
+        if (userVO == null || StringUtils.isEmpty(userVO.getName())) {
             return "教师";
         }
         return userVO.getName();
@@ -494,14 +549,14 @@ public class CourseServiceImpl implements CourseService {
         search.put("status_eq", 1);
         Example example = new ExampleBuilder(CourseUser.class).search(search).build();
         List<CourseUser> courseUserList = courseUserMapper.selectByExample(example);
-        if (CollectionUtils.isEmpty(courseUserList)) {
-            courseUserList = new ArrayList<>(1);
-        }
         List<Integer> userIdList = courseUserList.stream().map(CourseUser::getUserId).collect(Collectors.toList());
         List<UserListVO> userListVOList = DozerUtils.mapList(userInfoService.searchUserList(userIdList), UserListVO.class);
+        log.info("查询班级学生成功，userList:{}",userListVOList);
         if (classId == null || classId <= 0) {
             result.setDefaultCourse(0, courseId, "默认班级", 0, userListVOList);
+            return result;
         }
+        result.setUserListVOList(userListVOList);
         return result;
     }
 
@@ -517,6 +572,7 @@ public class CourseServiceImpl implements CourseService {
         CourseUser courseUser = new CourseUser();
         courseUser.setCourseId(course.getId());
         courseUser.setIsCreate(1);
+        courseUser.setStatus(1);
         courseUser.setUserId(AuthorityUtils.getUserId());
         courseUser.setCreateTime(DateUtils.currentTimeSeconds());
         courseUser.setUpdateTime(DateUtils.currentTimeSeconds());

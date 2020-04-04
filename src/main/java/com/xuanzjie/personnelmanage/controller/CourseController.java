@@ -24,7 +24,7 @@ public class  CourseController implements CourseServiceApi {
 
     @Override
     public ResResult<List<CourseListVO>> getCreateCourse(@RequestBody @Validated CourseDTO.GetCourseListDTO getCourseListDTO) {
-        return ResUtils.data(courseService.getCourseList(getCourseListDTO.getSearchType()));
+        return ResUtils.data(courseService.getCourseList(getCourseListDTO.getSearchType(),getCourseListDTO.getName()));
     }
 
     @Override
@@ -38,6 +38,11 @@ public class  CourseController implements CourseServiceApi {
     }
 
     @Override
+    public ResResult<List<ClassManageVO>> getCourseClass(@RequestBody @Validated CourseDTO.GetCourseDetailDTO getCourseDetailDTO) {
+        return ResUtils.data(courseService.searchClassList(getCourseDetailDTO.getId()));
+    }
+
+    @Override
     public ResResult<EntitySaveVO> updateClass(@RequestBody @Validated CourseDTO.UpdateClassDTO updateClassDTO) {
         return ResUtils.data(courseService.updateClass(updateClassDTO));
     }
@@ -45,5 +50,10 @@ public class  CourseController implements CourseServiceApi {
     @Override
     public ResResult<EntitySaveVO> updateStudent(@RequestBody @Validated CourseDTO.UpdateStudentDTO updateStudentDTO) {
         return ResUtils.data(courseService.updateStudent(updateStudentDTO));
+    }
+
+    @Override
+    public ResResult<List<CourseListVO>> searchCourse(CourseDTO.SearchCourseDTO searchCourseDTO) {
+        return ResUtils.data(courseService.searchCourse(searchCourseDTO));
     }
 }

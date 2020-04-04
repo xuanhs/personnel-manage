@@ -48,6 +48,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public EntitySaveVO updateFileBase(FileBaseDTO.UpdateFileBaseDTO fileBaseDTO) {
+        log.info("新增/保存文件，入参：{}",fileBaseDTO);
         EntitySaveVO entitySaveVO = new EntitySaveVO();
         entitySaveVO.setResult(ResultCode.FAIL);
         if (fileBaseDTO == null || StringUtils.isEmpty(fileBaseDTO.getFileName())

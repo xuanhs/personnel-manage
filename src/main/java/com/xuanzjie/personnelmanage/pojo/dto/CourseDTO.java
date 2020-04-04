@@ -18,7 +18,7 @@ public class CourseDTO {
 
         /**
          * 搜索类型
-         * 0 || null 登录账号创建的课程， 1 登录账号加入的课程
+         * 0 || null 登录账号创建的课程， 1 登录账号加入的课程 ,2 更多课程
          */
         @ApiModelProperty(notes = "搜索类型")
         private Integer searchType;
@@ -153,17 +153,9 @@ public class CourseDTO {
     @ApiModel(value = "SearchCourseDTO")
     public static class SearchCourseDTO{
 
-        /**
-         * 搜索类型 0 || null 课程维度，1 教师
-         */
-        @ApiModelProperty(notes = "搜索类型")
-        private Integer type;
-
         @ApiModelProperty(notes = "名称")
         private String name;
 
-        @ApiModelProperty(notes = "是否创建者/课程内人员")
-        private Integer status;
     }
 
     @Data
