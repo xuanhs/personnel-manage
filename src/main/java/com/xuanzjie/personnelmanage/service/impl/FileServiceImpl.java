@@ -9,6 +9,7 @@ import com.xuanzjie.personnelmanage.pojo.vo.FileBaseVO;
 import com.xuanzjie.personnelmanage.search.ExampleBuilder;
 import com.xuanzjie.personnelmanage.search.Search;
 import com.xuanzjie.personnelmanage.service.FileService;
+import com.xuanzjie.personnelmanage.utils.DateUtils;
 import com.xuanzjie.personnelmanage.utils.DozerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,8 @@ public class FileServiceImpl implements FileService {
             return entitySaveVO;
         }
         FileBase fileBase = DozerUtils.map(fileBaseDTO, FileBase.class);
+        int time = DateUtils.currentTimeSeconds();
+        fileBase.setUpdateTime(time);
         try {
             Integer data = fileBaseMapper.updateByPrimaryKeySelective(fileBase);
             if (data > 0) {
@@ -97,6 +100,9 @@ public class FileServiceImpl implements FileService {
             return entitySaveVO;
         }
         FileBase fileBase = DozerUtils.map(fileBaseDTO, FileBase.class);
+        int time = DateUtils.currentTimeSeconds();
+        fileBase.setCreateTime(time);
+        fileBase.setUpdateTime(time);
         try {
             Integer data = fileBaseMapper.insertSelective(fileBase);
             if (data > 0) {

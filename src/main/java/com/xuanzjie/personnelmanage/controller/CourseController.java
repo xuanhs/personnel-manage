@@ -1,11 +1,9 @@
 package com.xuanzjie.personnelmanage.controller;
 
 import com.xuanzjie.personnelmanage.api.CourseServiceApi;
+import com.xuanzjie.personnelmanage.pojo.dto.ApplyDTO;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
-import com.xuanzjie.personnelmanage.pojo.vo.ClassManageVO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseInfoVO;
-import com.xuanzjie.personnelmanage.pojo.vo.CourseListVO;
-import com.xuanzjie.personnelmanage.pojo.vo.EntitySaveVO;
+import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.service.CourseService;
 import com.xuanzjie.personnelmanage.utils.ResResult;
 import com.xuanzjie.personnelmanage.utils.ResUtils;
@@ -53,7 +51,22 @@ public class  CourseController implements CourseServiceApi {
     }
 
     @Override
-    public ResResult<List<CourseListVO>> searchCourse(CourseDTO.SearchCourseDTO searchCourseDTO) {
+    public ResResult<List<CourseListVO>> searchCourse(@RequestBody @Validated CourseDTO.SearchCourseDTO searchCourseDTO) {
         return ResUtils.data(courseService.searchCourse(searchCourseDTO));
+    }
+
+    @Override
+    public ResResult<EntitySaveVO> applyCourse(@RequestBody @Validated CourseDTO.ApplyCourseDTO applyCourseDTO) {
+        return ResUtils.data(courseService.applyCourse(applyCourseDTO));
+    }
+
+    @Override
+    public ResResult<EntitySaveVO> dealApply(@RequestBody @Validated CourseDTO.DealCourseDTO dealCourseDTO) {
+        return ResUtils.data(courseService.dealApply(dealCourseDTO));
+    }
+
+    @Override
+    public ResResult<List<ApplyMessageVO>> searchApplyMessage(@RequestBody @Validated ApplyDTO.SearchApplyMessageDTO req) {
+        return ResUtils.data(courseService.searchApplyMessage(req));
     }
 }

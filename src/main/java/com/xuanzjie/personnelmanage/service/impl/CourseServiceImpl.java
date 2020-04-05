@@ -4,6 +4,7 @@ import com.xuanzjie.personnelmanage.comman.ResultCode;
 import com.xuanzjie.personnelmanage.mapper.ClassMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseMapper;
 import com.xuanzjie.personnelmanage.mapper.CourseUserMapper;
+import com.xuanzjie.personnelmanage.pojo.dto.ApplyDTO;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
 import com.xuanzjie.personnelmanage.pojo.po.Class;
 import com.xuanzjie.personnelmanage.pojo.po.Course;
@@ -51,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseListVO> getCourseList(Integer searchType, String name) {
         Integer uid = AuthorityUtils.getUserId();
         log.info("查询课程：searchType:{}", searchType);
-        if(StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             name = "";
         }
         if (searchType != null && searchType == 1) {
@@ -103,7 +104,7 @@ public class CourseServiceImpl implements CourseService {
         }
         List<Integer> courseIdList = courseUserList.stream().map(CourseUser::getCourseId).collect(Collectors.toList());
 
-        List<Course> courseList = selectCourseByIdList(courseIdList,name);
+        List<Course> courseList = selectCourseByIdList(courseIdList, name);
         List<CourseListVO> result = searchTeacherName(courseList);
         searchFileBase(result);
         log.info("查询成功课程成功，isCreate:{},result:{}", isCreate, result);
@@ -153,11 +154,11 @@ public class CourseServiceImpl implements CourseService {
      * @param courseIdList
      * @return
      */
-    private List<Course> selectCourseByIdList(List<Integer> courseIdList,String name) {
+    private List<Course> selectCourseByIdList(List<Integer> courseIdList, String name) {
         Search search = new Search();
         search.put("id_in", courseIdList);
-        if(!StringUtils.isEmpty(name)){
-            search.put("name_like",name);
+        if (!StringUtils.isEmpty(name)) {
+            search.put("name_like", name);
         }
         Example example = new ExampleBuilder(Course.class).search(search).build();
         List<Course> courseList = courseMapper.selectByExample(example);
@@ -199,7 +200,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<ClassManageVO> searchClassList(Integer id) {
-        if(id == null || id <= 0){
+        if (id == null || id <= 0) {
             return new ArrayList<>(0);
         }
         return searchClassAndStudent(id);
@@ -277,16 +278,16 @@ public class CourseServiceImpl implements CourseService {
         if (searchCourseDTO == null || StringUtils.isEmpty(searchCourseDTO.getName())) {
             return getAllCourse(AuthorityUtils.getUserId());
         }
-        List<CourseListVO> courseListVOList  = searchCourseByCourseName(searchCourseDTO.getName());
+        List<CourseListVO> courseListVOList = searchCourseByCourseName(searchCourseDTO.getName());
 
         courseListVOList.addAll(searchCourseByTeacherName(searchCourseDTO.getName()));
-        log.info("根据名称搜索课程成功，result：{}",courseListVOList);
+        log.info("根据名称搜索课程成功，result：{}", courseListVOList);
         List<CourseListVO> result = courseListVOList.stream().collect(Collectors.collectingAndThen(
-                Collectors.toCollection(()->new TreeSet<>(Comparator.comparing(CourseListVO::getId))),
-                courseListVOs-> new ArrayList<>(courseListVOs)
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CourseListVO::getId))),
+                courseListVOs -> new ArrayList<>(courseListVOs)
         ));
         searchFileBase(result);
-        log.info("根据名称搜索课程成功,去重，返回搜索结果，result:{}",result);
+        log.info("根据名称搜索课程成功,去重，返回搜索结果，result:{}", result);
         return result;
     }
 
@@ -299,18 +300,45 @@ public class CourseServiceImpl implements CourseService {
             log.info("申请加入课程参数不正确");
             return entitySaveVO;
         }
+        if(checkApplyTimes(userId,applyCourseDTO.getCourseId())){
+            entitySaveVO.setMessage("请勿重复申请");
+            log.warn("{} 重复申请课程{}",userId,applyCourseDTO.getCourseId());
+            return entitySaveVO;
+        }
         CourseUser courseUser = new CourseUser();
         courseUser.setCourseId(applyCourseDTO.getCourseId());
         courseUser.setUserId(userId);
         courseUser.setStatus(0);
         courseUser.setIsCreate(0);
+        int time = DateUtils.currentTimeSeconds();
+        courseUser.setCreateTime(time);
+        courseUser.setUpdateTime(time);
         int result = courseUserMapper.insertSelective(courseUser);
         if (result <= 0) {
+            log.info("{}申请加入课程失败，{}", userId, applyCourseDTO);
             return entitySaveVO;
         }
-        log.info("{}申请加入课程成功，{}", userId, applyCourseDTO);
+        log.info("{}申请加入课程成功，{}", userId, courseUser);
         entitySaveVO.setResult(ResultCode.SUCCESS);
         return entitySaveVO;
+    }
+
+    /**
+     * 检查是否重复申请
+     * @param userId
+     * @param courseId
+     * @return
+     */
+    private Boolean checkApplyTimes(Integer userId,Integer courseId) {
+        Search search = new Search();
+        search.put("userId_eq",userId);
+        search.put("courseId_eq",courseId);
+        Example example = new ExampleBuilder(CourseUser.class).search(search).build();
+        List<CourseUser> courseUserList = courseUserMapper.selectByExample(example);
+        if(CollectionUtils.isEmpty(courseUserList)){
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -324,7 +352,7 @@ public class CourseServiceImpl implements CourseService {
         CourseUser courseUser = new CourseUser();
         courseUser.setId(dealCourseDTO.getId());
         courseUser.setStatus(dealCourseDTO.getStatus());
-        int result = courseUserMapper.updateByPrimaryKey(courseUser);
+        int result = courseUserMapper.updateByPrimaryKeySelective(courseUser);
         if (result <= 0) {
             log.info("处理课程参数不正确");
             return entitySaveVO;
@@ -332,6 +360,44 @@ public class CourseServiceImpl implements CourseService {
         log.info("处理课程成功，{}", dealCourseDTO);
         entitySaveVO.setResult(ResultCode.SUCCESS);
         return entitySaveVO;
+    }
+
+    @Override
+    public List<ApplyMessageVO> searchApplyMessage(ApplyDTO.SearchApplyMessageDTO req) {
+        if (req == null || req.getCourseId() == null) {
+            return new ArrayList<>(0);
+        }
+        Search search = new Search();
+        search.put("status_eq", 0);
+        search.put("courseId_eq", req.getCourseId());
+        Example example = new ExampleBuilder(CourseUser.class).search(search).build();
+        List<CourseUser> courseUserList = courseUserMapper.selectByExample(example);
+        log.info("查询申请信息成功，result:{}", courseUserList);
+        List<ApplyMessageVO> result = DozerUtils.mapList(courseUserList, ApplyMessageVO.class);
+        searchNameAndPhone(result);
+        return result;
+    }
+
+    /**
+     * 根据userId获取名称和联系方式
+     *
+     * @param result
+     */
+    private void searchNameAndPhone(List<ApplyMessageVO> result) {
+        if (CollectionUtils.isEmpty(result)) {
+            return;
+        }
+        List<Integer> userIdList = result.stream().map(ApplyMessageVO::getUserId).collect(Collectors.toList());
+        List<User> userList = userInfoService.searchUserList(userIdList);
+        Map<Integer, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, user -> user, (newData, oldData) -> newData));
+        for(ApplyMessageVO applyMessageVO : result){
+            User user = userMap.get(applyMessageVO.getUserId());
+            if(user == null){
+                continue;
+            }
+            applyMessageVO.setName(user.getName());
+            applyMessageVO.setPhone(user.getPhone());
+        }
     }
 
     /**
@@ -551,7 +617,7 @@ public class CourseServiceImpl implements CourseService {
         List<CourseUser> courseUserList = courseUserMapper.selectByExample(example);
         List<Integer> userIdList = courseUserList.stream().map(CourseUser::getUserId).collect(Collectors.toList());
         List<UserListVO> userListVOList = DozerUtils.mapList(userInfoService.searchUserList(userIdList), UserListVO.class);
-        log.info("查询班级学生成功，userList:{}",userListVOList);
+        log.info("查询班级学生成功，userList:{}", userListVOList);
         if (classId == null || classId <= 0) {
             result.setDefaultCourse(0, courseId, "默认班级", 0, userListVOList);
             return result;

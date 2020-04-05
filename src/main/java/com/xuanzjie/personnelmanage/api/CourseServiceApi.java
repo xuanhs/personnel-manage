@@ -1,6 +1,7 @@
 package com.xuanzjie.personnelmanage.api;
 
 
+import com.xuanzjie.personnelmanage.pojo.dto.ApplyDTO;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
 import com.xuanzjie.personnelmanage.pojo.vo.*;
 import com.xuanzjie.personnelmanage.utils.ResResult;
@@ -68,5 +69,23 @@ public interface CourseServiceApi {
     @ApiOperation(value = "根据名称搜索课程")
     @PostMapping("/course/searchCourse")
     ResResult<List<CourseListVO>> searchCourse(CourseDTO.SearchCourseDTO searchCourseDTO);
+
+    /**
+     * 学生申请加入课程
+     */
+    @ApiOperation(value = "学生申请加入课程")
+    @PostMapping("/course/applyCourse")
+    ResResult<EntitySaveVO> applyCourse(CourseDTO.ApplyCourseDTO applyCourseDTO);
+
+    /**
+     * 教师同意驳回加入课程
+     */
+    @ApiOperation(value = "教师同意驳回加入课程")
+    @PostMapping("/course/dealApply")
+    ResResult<EntitySaveVO> dealApply(CourseDTO.DealCourseDTO dealCourseDTO);
+
+    @ApiOperation(value = "查询课程申请信息")
+    @PostMapping("/course/searchApplyMessage")
+    ResResult<List<ApplyMessageVO>> searchApplyMessage(ApplyDTO.SearchApplyMessageDTO req);
 
 }

@@ -1,5 +1,6 @@
 package com.xuanzjie.personnelmanage.service;
 
+import com.xuanzjie.personnelmanage.pojo.dto.ApplyDTO;
 import com.xuanzjie.personnelmanage.pojo.dto.CourseDTO;
 import com.xuanzjie.personnelmanage.pojo.po.FileBase;
 import com.xuanzjie.personnelmanage.pojo.vo.*;
@@ -78,4 +79,10 @@ public interface CourseService {
      * 教师同意驳回加入课程
      */
     EntitySaveVO dealApply(CourseDTO.DealCourseDTO dealCourseDTO);
+
+    /**
+     * 查看申请信息
+     * @return
+     */
+    List<ApplyMessageVO> searchApplyMessage(ApplyDTO.SearchApplyMessageDTO req);
 }

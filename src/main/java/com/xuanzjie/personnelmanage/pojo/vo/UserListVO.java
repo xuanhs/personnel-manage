@@ -9,6 +9,8 @@ public class UserListVO {
 
     private String emile;
 
+    private String phone;
+
     private String cardId;
 
     private Integer identity;

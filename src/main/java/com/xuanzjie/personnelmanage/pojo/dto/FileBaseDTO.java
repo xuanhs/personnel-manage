@@ -6,13 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 public class FileBaseDTO {
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @ApiModel("UpdateFileBaseDTO")
-    public static class UpdateFileBaseDTO{
+    public static class UpdateFileBaseDTO {
 
         @ApiModelProperty(notes = "文件id")
         private Integer id;
@@ -35,4 +39,5 @@ public class FileBaseDTO {
         @ApiModelProperty(notes = "保存文件名")
         private String memoryName;
     }
+
 }

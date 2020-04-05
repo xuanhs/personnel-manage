@@ -36,4 +36,17 @@ public class Experiment {
     @Column(name = "deadline")
     private Integer deadline;
 
+    /**
+     * 到期时间
+     */
+    @Column(name = "update_time")
+    private Integer updateTime;
+
+    /**
+     * 到期时间
+     */
+    @Column(name = "file_id")
+    private Integer fileId;
+
+
 }

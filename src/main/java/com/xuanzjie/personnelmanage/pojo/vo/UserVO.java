@@ -14,6 +14,8 @@ public class UserVO {
 
     private String emile;
 
+    private String phone;
+
     private String cardId;
 
     private Integer identity;
